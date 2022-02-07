@@ -1,6 +1,8 @@
-{% extends 'base.html' %} {% block content %}
+{% extends 'base.html' %} 
+{% block title %}- {{heading}} {% endblock %}
+{% block content %}
 
-<h1 class="title">Trending Artists</h1>
+<h1 class="title">{{heading}}</h1>
 
 <form class="mb-5" method="get">
   <div class="field has-addons">
@@ -16,19 +18,20 @@
   <a class="button is-dark" href="{% url 'artist_list' %}">Clear Search</a>
 </form>
 <div class="gallery">
-  {% for artist in artists %}
-  <a href="">
-    <div class="card">
-      <div class="card-image">
-        <figure class="image is-square">
-          <img src="{{artist.img}}" alt="{{artist.name}}" />
-        </figure>
+  {% for artist in duke %}
+  <!-- Here we are changing the href of the a tag to use the url DTL -->
+    <a href="{% url 'artist_detail' artist.pk %}">
+      <div class="card">
+        <div class="card-image">
+          <figure class="image is-square">
+            <img src="{{artist.img}}" alt="{{artist.name}}" />
+          </figure>
+        </div>
+        <div class="card-header">
+          <p class="card-header-title">{{artist.name}}</p>
+        </div>
       </div>
-      <div class="card-header">
-        <p class="card-header-title">{{artist.name}}</p>
-      </div>
-    </div>
-  </a>
+    </a>
   {% endfor %}
 </div>
 
