@@ -1,4 +1,5 @@
 from django.db import models
+import time
 
 # Create your models here.
 
@@ -15,3 +16,16 @@ class Artist(models.Model):
 
     class Meta:
         ordering = ['name']
+
+class Song(models.Model):
+
+    title = models.CharField(max_length=200)
+    length = models.IntegerField(default=0)
+    artist = models.ForeignKey(Artist, on_delete=models.CASCADE, related_name="songs")
+
+    def __str__(self):
+        return self.title
+
+    # Here we define the method to look at the length property and convert it
+    def get_length(self):
+        return time.strftime("%-M:%S", time.gmtime(self.length))
