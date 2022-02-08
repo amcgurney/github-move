@@ -8,5 +8,6 @@ urlpatterns = [
     path('artists/new/', views.ArtistCreate.as_view(), name="artist_create"),
     path('artists/<int:pk>/', views.ArtistDetail.as_view(), name="artist_detail"),
     path('artists/<int:pk>/update', views.ArtistUpdate.as_view(), name="artist_update"),
-    path('artists/<int:pk>/delete', views.ArtistDelete.as_view(), name="artist_delete")
+    path('artists/<int:pk>/delete', views.ArtistDelete.as_view(), name="artist_delete"),
+    path('artists/<int:pk>/songs/new', views.SongCreate.as_view(), name="song_create"),
 ]
