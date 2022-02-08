@@ -3,6 +3,7 @@ from django.views.generic.base import TemplateView # <- View class to handle req
 from .models import Artist
 from django.views.generic import DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from django.urls import reverse
 
 # Create your views here.
 
@@ -20,18 +21,20 @@ class ArtistList(TemplateView):
         context = super().get_context_data(**kwargs)
         name = self.request.GET.get("name")
         if name != None:
-            context["duke"] = Artist.objects.filter(name__icontains=name)
-            context["heading"] = f"Searching for {name}"
+            context["artists"] = Artist.objects.filter(name__icontains=name)
+            context["header"] = f"Searching for {name}"
         else:
-            context["duke"] = Artist.objects.all()
-            context["heading"] = "Trending artists"
+            context["artists"] = Artist.objects.all()
+            context["header"] = "Trending artists"
         return context
 
 class ArtistCreate(CreateView):
     model = Artist
-    fields = ['name', 'img', 'bio']
+    fields = ['name', 'img', 'bio', 'verified_artist']
     template_name = "artist_create.html"
-    success_url = "/artists/"
+    # this will get the pk from the route and redirect to artist view
+    def get_success_url(self):
+        return reverse('artist_detail', kwargs={'pk': self.object.pk})
 
 class ArtistDetail(DetailView):
     model = Artist
@@ -39,9 +42,11 @@ class ArtistDetail(DetailView):
 
 class ArtistUpdate(UpdateView):
     model = Artist
-    fields = ['name', 'img', 'bio']
+    fields = ['name', 'img', 'bio', 'verified_artist']
     template_name = "artist_update.html"
-    success_url = "/artists/"
+
+    def get_success_url(self):
+        return reverse('artist_detail', kwargs={'pk': self.object.pk})
 
 class ArtistDelete(DeleteView):
     model = Artist
