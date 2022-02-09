@@ -1,7 +1,7 @@
 from django.shortcuts import redirect
 from django.views import View
 from django.views.generic.base import TemplateView # <- View class to handle requests
-from .models import Artist, Song
+from .models import Artist, Song, Playlist
 from django.views.generic import DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.urls import reverse
@@ -11,6 +11,11 @@ from django.urls import reverse
 # Here we will be creating a class called Home and extending it from the View class
 class Home(TemplateView):
     template_name = "home.html"
+    # Here we have added the playlists as context
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["playlists"] = Playlist.objects.all()
+        return context
 
 class About(TemplateView):
     template_name = "about.html"
@@ -41,6 +46,11 @@ class ArtistDetail(DetailView):
     model = Artist
     template_name = "artist_detail.html"
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["playlists"] = Playlist.objects.all()
+        return context
+
 class ArtistUpdate(UpdateView):
     model = Artist
     fields = ['name', 'img', 'bio', 'verified_artist']
@@ -62,3 +72,18 @@ class SongCreate(View):
         artist = Artist.objects.get(pk=pk)
         Song.objects.create(title=title, length=length, artist=artist)
         return redirect('artist_detail', pk=pk)
+
+class PlaylistSongAssoc(View):
+
+    def get(self, request, pk, song_pk):
+        # get the query param from the url
+        assoc = request.GET.get("assoc")
+        if assoc == "remove":
+            # get the playlist by the id and
+            # remove from the join table the given song_id
+            Playlist.objects.get(pk=pk).songs.remove(song_pk)
+        if assoc == "add":
+            # get the playlist by the id and
+            # add to the join table the given song_id
+            Playlist.objects.get(pk=pk).songs.add(song_pk)
+        return redirect('home')
